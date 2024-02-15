@@ -5,7 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Apple
-  - text
+  - Projectile
+  - Ground
+  - Target
   layers:
   - Default
   - TransparentFX
@@ -15,9 +17,9 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - Apple Tree
+  - Apple
+  - Basket
   - 
   - 
   - 
