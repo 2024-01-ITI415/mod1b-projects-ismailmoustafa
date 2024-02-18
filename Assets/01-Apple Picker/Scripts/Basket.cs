@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Basket : MonoBehaviour
+public class Basket1 : MonoBehaviour
 {
     [Header("Set Dynamically")]
     public Text scoreGT;

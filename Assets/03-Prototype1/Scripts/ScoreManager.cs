@@ -1,31 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class ScoreManager : MonoBehaviour
+public class ScoreDetector : MonoBehaviour
 {
-    public Text scoreText; // Reference to the UI text component displaying the score
-    private int score = 0; // Variable to store the score
+    public int score = 0; // Holds the current score
 
-    private void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        // Initialize the score UI
-        UpdateScoreUI();
-    }
-
-    public void IncrementScore(int amount)
-    {
-        // Increment the score by the specified amount
-        score += amount;
-
-        // Update the score UI
-        UpdateScoreUI();
-    }
-
-    private void UpdateScoreUI()
-    {
-        // Update the score text UI with the current score value
-        scoreText.text = "Score: " + score.ToString();
+        if (other.CompareTag("Basketball")) //
+        {
+            score++;
+            Debug.Log("Score! Total: " + score); // Display the score in the console
+        }
     }
 }

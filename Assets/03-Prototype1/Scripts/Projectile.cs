@@ -1,43 +1,74 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms.Impl;
-using UnityEngine.UI;
 
-public class Projectile : MonoBehaviour
+public class BasketballShooter : MonoBehaviour
 {
-    public float speed = 10f;
-    public float destroyYThreshold = -14f;
+    public GameObject projectilePrefab; // Assign your basketball prefab in the Inspector
+    public CameraFollow cameraFollowScript; // Assign your CameraFollow script attached to the camera in the Inspector
+    public float shootingForce = 1000f;
+    public float moveSpeed = 5f; // Speed at which the shooter moves
 
-    private Vector3 direction;
-
-    private void Update()
+    void Update()
     {
-        // Move the projectile in its direction
-        transform.Translate(direction * speed * Time.deltaTime, Space.World);
-        if (transform.position.y < destroyYThreshold)
+        // Movement
+        float moveX = Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime; // Get horizontal input
+        float moveZ = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime; // Get vertical input
+
+        // Apply movement
+        transform.Translate(moveX, 0, moveZ);
+
+        // Shooting with mouse click
+        if (Input.GetMouseButtonDown(0)) // 0 is the left mouse button
         {
-            // Destroy the projectile
-            Destroy(gameObject);
+            ShootBasketballTowardsClick();
         }
     }
 
-    public void SetDirection(Vector3 newDirection)
+    void ShootBasketballTowardsClick()
     {
-        direction = newDirection;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        // Check if the projectile collides with a target
-        if (other.CompareTag("Target"))
+        if (projectilePrefab != null)
         {
-            // Destroy the target object
-            Destroy(other.gameObject);
+            // Convert mouse click position to a ray from the camera
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
 
-            // Update the score using ScoreManager
-            FindObjectOfType<ScoreManager>().IncrementScore(100);
+            Vector3 targetPosition;
+            if (Physics.Raycast(ray, out hit))
+            {
+                targetPosition = hit.point;
+            }
+            else
+            {
+                targetPosition = ray.GetPoint(1000); // Example distance
+            }
+
+            // Instantiate the basketball prefab at this object's position
+            GameObject basketball = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+
+            // Ensure the basketball has a Rigidbody component
+            Rigidbody rb = basketball.GetComponent<Rigidbody>();
+            if (rb == null)
+            {
+                rb = basketball.AddComponent<Rigidbody>();
+            }
+
+            // Calculate the direction from the shooter to the target position
+            Vector3 shootingDirection = targetPosition - transform.position;
+            shootingDirection = shootingDirection.normalized;
+
+            // Add an upward force to simulate the arc of a real basketball shot
+            Vector3 upwardForce = Vector3.up * shootingForce * 0.3f; // Adjust the multiplier to get the desired arc
+
+            // Apply forces to shoot the basketball
+            rb.AddForce(shootingDirection * shootingForce + upwardForce);
+
+            // Apply a rotational torque to simulate the basketball's spin
+            rb.AddTorque(transform.forward * -1000); // Adjust the torque value to get the desired spin
+
+            // Notify the camera to shift upwards
+            if (cameraFollowScript != null)
+            {
+                cameraFollowScript.OnShoot();
+            }
         }
     }
 }

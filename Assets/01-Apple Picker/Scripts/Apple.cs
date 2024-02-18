@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Apple : MonoBehaviour
+public class Apple1 : MonoBehaviour
 {
     public static float bottomY = -20f;
 
